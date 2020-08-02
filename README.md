@@ -26,7 +26,7 @@ Both the iOS and Android apps are missing this feature!
 
 **Command**: `support`\
 **Description**: Get an invite to the [support server](https://discord.gg/xfe9tcW)\
-**Usage**: `invite`
+**Usage**: `support`
 
 ### What permissions does it need?
 The bot requires `MANAGE_MESSAGES`, which is the permission Discord requires to publish messages sent by users other than yourself.
