@@ -9,23 +9,23 @@ Both the iOS and Android apps are missing this feature!
 **Prefix**: `@Publisher`
 
 #### Commands
-**Command**: `publish`
-**Alias**: `p`
-**Description**: Publish a message
-**Permissions**: Both the bot and user must have `MANAGE_MESSAGES`
+**Command**: `publish`\
+**Alias**: `p`\
+**Description**: Publish a message\
+**Permissions**: Both the bot and user must have `MANAGE_MESSAGES`\
 **Usage**: `publish <msg_id|msg_url>`
 
-**Command**: `help`
-**Alias**: `h`, `cmds`, `commands`
-**Description**: Get a list of commands
+**Command**: `help`\
+**Alias**: `h`, `cmds`, `commands`\
+**Description**: Get a list of commands\
 **Usage**: `help`
 
-**Command**: `invite`
-**Description**: Invite the bot
+**Command**: `invite`\
+**Description**: Invite the bot\
 **Usage**: `invite`
 
-**Command**: `support`
-**Description**: Get an invite to the [support server](https://discord.gg/xfe9tcW)
+**Command**: `support`\
+**Description**: Get an invite to the [support server](https://discord.gg/xfe9tcW)\
 **Usage**: `invite`
 
 ### What permissions does the bot need?
