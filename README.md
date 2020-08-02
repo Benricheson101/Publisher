@@ -8,12 +8,12 @@ Both the iOS and Android apps are missing this feature!
 ### How do I use it?
 **Prefix**: `@Publisher`
 
-#### Commands
+### Commands
 **Command**: `publish`\
 **Alias**: `p`\
 **Description**: Publish a message\
 **Permissions**: Both the bot and user must have `MANAGE_MESSAGES`\
-**Usage**: `publish <msg_id|msg_url>`
+**Usage**: `publish <msg_id_to_publish|msg_url_to_publish>`
 
 **Command**: `help`\
 **Alias**: `h`, `cmds`, `commands`\
@@ -28,5 +28,5 @@ Both the iOS and Android apps are missing this feature!
 **Description**: Get an invite to the [support server](https://discord.gg/xfe9tcW)\
 **Usage**: `invite`
 
-### What permissions does the bot need?
+### What permissions does it need?
 The bot requires `MANAGE_MESSAGES`, which is the permission Discord requires to publish messages sent by users other than yourself.
