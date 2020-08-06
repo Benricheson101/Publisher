@@ -1,8 +1,20 @@
-import 'dotenv/config.js'
-import { Client, Intents, MessageEmbed } from 'discord.js'
-import { constants } from './config.js'
-import fetch from 'node-fetch'
-import ms from 'ms'
+require('dotenv/config')
+const { Client, Intents, MessageEmbed } = require('discord.js')
+const { constants } = require('./util')
+const { Database } = require('./Database')
+const { channels } = require('./cmds/channels')
+const { autopublish } = require('./util/autopublish')
+const fetch = require('node-fetch')
+const ms = require('ms')
+
+const db = new Database('publisher', 'mongodb://localhost/publisher', {
+  useNewUrlParser: true,
+  useUnifiedTopology: true
+})
+
+db.connect()
+  .then(() => console.log('Connected to MongoDB!'))
+  .catch(console.error)
 
 const client = new Client({
   allowedMentions: [],
@@ -19,12 +31,32 @@ client.on('ready', () => {
 })
 
 client.on('message', async (msg) => {
+  let g = await db.getGuild(msg.guild.id)
+
+  if (!g) {
+    g = Database.guildDoc(msg.guild.id)
+    await db.addGuild(g)
+  }
+
   const cmd = constants.REGEX.PARSE_CMD(client).exec(msg.content)
 
-  if (
-    msg.author.bot ||
-    !cmd
-  ) return
+  if (!cmd) {
+    if (msg.channel.type !== 'news') return
+
+    if (
+      !await db.checkForChannel(msg.guild.id, msg.channel.id) ||
+      msg.author.id === client.user.id
+    ) return
+
+    console.log('autopublish pls')
+
+    await autopublish(msg)
+      .catch(console.error)
+
+    return
+  }
+
+  if (msg.author.bot) return
 
   const command = cmd.groups.command.trim().toLowerCase()
   const args = cmd.groups.args?.split(' ')
@@ -32,6 +64,8 @@ client.on('message', async (msg) => {
   switch (command) {
     case 'p':
     case 'publish': {
+      if (!args) return msg.channel.send(':x: You must provide either a link or id of the message you would like to publish.')
+
       const m = await getMsg(msg, args[0])
 
       if (!m) return msg.channel.send(':x: That message does not exist.')
@@ -39,17 +73,18 @@ client.on('message', async (msg) => {
 
       if (
         !msg.guild.me.permissions.has('MANAGE_MESSAGES') ||
-      !msg.channel.permissionsFor(msg.guild.me).has('MANAGE_MESSAGES')
+        !msg.channel.permissionsFor(msg.guild.me).has('MANAGE_MESSAGES')
       ) {
         return await msg.channel.send(':x: I do not have permission to publish messages. Please make sure I have `MANAGE_MESSAGES`')
           .then((m) => m.delete({ timeout: 5000 }))
       }
 
-      if (!msg.member.permissionsIn(m.channel).has('MANAGE_MESSAGES')) {
-        return await msg.channel.send(':x: You do not have permission to use this command. You must have `MANAGE_MESSAGES`')
+      if (
+        (m.author.id !== msg.author.id && !msg.member.permissionsIn(m.channel).has('MANAGE_MESSAGES'))
+      ) {
+        return await msg.channel.send(':x: You do not have permission to use this command. You must have `MANAGE_MESSAGES` to publish another user\'s message, or `SEND_MESSAGESE` to send your own message.')
           .then((m) => m.delete({ timeout: 5000 }))
       }
-      if (!args) return msg.channel.send(':x: You must provide either a link or id of the message you would like to publish.')
 
       const a = await fetch(`https://discord.com/api/v6/channels/${m.channel.id}/messages/${m.id}/crosspost`, {
         method: 'post',
@@ -69,26 +104,25 @@ client.on('message', async (msg) => {
     case 'help': {
       return msg.channel.send({
         embed: new MessageEmbed()
-          .addField('Publish', `
-**Description**: Publishes a message
-**Usage**: \`publish <msg_url|msg_id>\`,
-**User Permission**: \`MANAGE_MESSAGES\`
-**Commands**:
-\`p\`
-\`publish\`
+          .addField('publish <msg_link|msg_id>', `
+> **Description**: Manually publish a message
+> **User Permission**: \`MANAGE_MESSAGES\`
+> **Alias**: \`p\`
         `)
-          .addField('Help', `
-**Description**: Get a list of commands
-**Commands**:
-\`h\`
-\`help\`
-\`commands\`
+          .addField('autopublish [add|remove [channel]]', `
+> **Description**: Edit channels on the autopublish list
+> **Info**: When you post a message in an autopublish channel, the bot will react with a reaction for 2 seconds:
+> :loudspeaker: - The message was successfully published
+> :timer: - The bot has already published 10 messages in the last hour
+> :exclamation: - The message was already published
+> **User Permission**: \`MANAGE_CHANNELS\`
+> **Alias**: \`auto\`
         `)
-          .addField('Invite', `
-**Description**: Invite the bot
+          .addField('invite', `
+> **Description**: Invite the bot
         `)
-          .addField('Support', `
-**Description**: Join the support server
+          .addField('support', `
+> **Description**: Join the support server
         `)
           .setColor('#e38100')
       })
@@ -98,6 +132,13 @@ client.on('message', async (msg) => {
     }
     case 'invite': {
       return msg.channel.send(`<https://discord.com/api/oauth2/authorize?client_id=${client.user.id}&permissions=${constants.PERMISSIONS}&scope=bot>`)
+    }
+    case 'auto':
+    case 'autopublish':
+    case 'channel':
+    case 'channels': {
+      channels(msg, args, db)
+        .catch(console.error)
     }
   }
 })

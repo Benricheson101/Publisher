@@ -3,13 +3,13 @@
   "version": "1.0.0",
   "main": "src/index.js",
   "license": "MIT",
-  "type": "module",
   "scripts": {
     "dev": "yarn nodemon src/index.js"
   },
   "dependencies": {
     "discord.js": "^12.2.0",
     "dotenv": "^8.2.0",
+    "mongodb": "^3.6.0",
     "ms": "^2.1.2",
     "node-fetch": "^2.6.0"
   },
