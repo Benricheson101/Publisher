@@ -17,13 +17,13 @@ Discord does not have this feature!
 **Usage**: `publish <msg_id_to_publish|msg_url_to_publish>`
 
 **Command**: `autopublish`\
-**Alias**: \`auto\`\
+**Alias**: `auto`\
 **Description**: Edit channels on the autopublish list\
 **Info**: When you post a message in an autopublish channel, the bot will react with a reaction for 2 seconds:\
 📢 - The message was successfully published\
 ⏲️ - The bot has already published 10 messages in the last hour\
 ❗ - The message was already published\
-**Permissions**: \`MANAGE_CHANNELS\`\
+**Permissions**: `MANAGE_CHANNELS`\
 **Usage**: `autopublish [add|remove [channel]]`
 
 **Command**: `help`\
