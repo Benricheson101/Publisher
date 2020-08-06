@@ -48,8 +48,6 @@ client.on('message', async (msg) => {
       msg.author.id === client.user.id
     ) return
 
-    console.log('autopublish pls')
-
     await autopublish(msg)
       .catch(console.error)
 
