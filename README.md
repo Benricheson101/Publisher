@@ -23,7 +23,7 @@ Discord does not have this feature!
 📢 - The message was successfully published\
 ⏲️ - The bot has already published 10 messages in the last hour\
 ❗ - The message was already published\
-**Permissions**: \`MANAGE_CHANNELS\`
+**Permissions**: \`MANAGE_CHANNELS\`\
 **Usage**: `autopublish [add|remove [channel]]`
 
 **Command**: `help`\
