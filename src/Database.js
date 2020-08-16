@@ -10,10 +10,6 @@ class Database {
     this.ops = ops
   }
 
-  close () {
-    return this.client.close()
-  }
-
   async connect () {
     const mongo = await connect(this.url, this.ops)
     if (mongo instanceof MongoClient) {

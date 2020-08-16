@@ -1,19 +1,15 @@
-const fetch = require('node-fetch')
-
 const CLOCK = '⏲️'
 const MEGAPHONE = '📢'
 const EXCLAMATION = '❗'
+const ROTATING_LIGHT = '🚨'
 
 async function autopublish (msg) {
-  if (!msg.channel.permissionsFor(msg.guild.me).has('MANAGE_MESSAGES')) return // do something
+  if (
+    !msg.channel.permissionsFor(msg.guild.me).has('MANAGE_MESSAGES') ||
+    !msg.channel.permissionsFor(msg.guild.me).has('SEND_MESSAGES')
+  ) return react(msg, ROTATING_LIGHT)
 
-  const a = await fetch(`https://discord.com/api/v6/channels/${msg.channel.id}/messages/${msg.id}/crosspost`, {
-    method: 'post',
-    headers: {
-      Authorization: `Bot ${msg.client.token}`
-    }
-  })
-    .then((a) => a.json())
+  const a = await msg.client.api.channels(msg.channel.id).messages(msg.id).crosspost().post()
 
   if (a?.message === 'You are being rate limited.') return await react(msg, CLOCK)
   if (a?.id === msg.id) return await react(msg, MEGAPHONE)

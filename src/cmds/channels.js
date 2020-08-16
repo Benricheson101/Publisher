@@ -46,7 +46,7 @@ async function channels (msg, args = [], db) {
 
       const mapped = channels.map((c) => `#${c.name} (${c.id})`)
 
-      if (!mapped.length) return msg.channel.send(':x: There are no confugured channels on the autopublish list.')
+      if (!mapped.length) return msg.channel.send(':x: There are no configured channels on the autopublish list.')
 
       msg.channel.send('```\n' + mapped.filter(Boolean).join('\n') + '```', {
         split: {

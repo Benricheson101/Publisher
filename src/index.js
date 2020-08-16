@@ -4,8 +4,8 @@ const { constants } = require('./util')
 const { Database } = require('./Database')
 const { channels } = require('./cmds/channels')
 const { autopublish } = require('./util/autopublish')
-const fetch = require('node-fetch')
 const ms = require('ms')
+const { inspect } = require('util')
 
 const db = new Database('publisher', 'mongodb://localhost/publisher', {
   useNewUrlParser: true,
@@ -66,14 +66,16 @@ client.on('message', async (msg) => {
 
       const m = await getMsg(msg, args[0])
 
+      if (m.guild.id !== msg.guild.id) return
+
       if (!m) return msg.channel.send(':x: That message does not exist.')
       if (m.channel.type !== 'news') return msg.channel.send(':x: That message was not sent in an announcement channel.')
 
       if (
-        !msg.guild.me.permissions.has('MANAGE_MESSAGES') ||
-        !msg.channel.permissionsFor(msg.guild.me).has('MANAGE_MESSAGES')
+        !m.guild.me.permissionsIn(m.channel).has('MANAGE_MESSAGES') ||
+        !m.guild.me.permissionsIn(m.channel).has('SEND_MESSAGES')
       ) {
-        return await msg.channel.send(':x: I do not have permission to publish messages. Please make sure I have `MANAGE_MESSAGES`')
+        return await msg.channel.send(':x: I do not have permission to publish messages. Please make sure I have both `SEND_MESSAGES` and `MANAGE_MESSAGES`')
           .then((m) => m.delete({ timeout: 5000 }))
       }
 
@@ -84,18 +86,18 @@ client.on('message', async (msg) => {
           .then((m) => m.delete({ timeout: 5000 }))
       }
 
-      const a = await fetch(`https://discord.com/api/v6/channels/${m.channel.id}/messages/${m.id}/crosspost`, {
-        method: 'post',
-        headers: {
-          Authorization: `Bot ${client.token}`
-        }
-      })
-        .then((a) => a.json())
+      const a = await client.api.channels(msg.channel.id).messages(msg.id).crosspost().post()
 
       if (a?.code === 40033) return msg.channel.send(':x: This message has already been published!')
       if (a?.message === 'You are being rate limited.') return msg.channel.send(`:x: You are being rate limited. Try again in ${ms(a?.retry_after)}`)
       if (a?.id === m.id) return msg.channel.send(`:white_check_mark: Successfully published message with id \`${m.id}\``)
-      return msg.channel.send(':question: Something happened and I don\'t know what!')
+      return msg.channel.send(`:question: Something happened and I don't know what! If this keeps happening, please join the support server (${client.user} support).
+
+\`Response:\`
+\`\`\`js
+${inspect(a).substring(0, 1900)}
+\`\`\`
+`)
     }
     case 'h':
     case 'commands':
@@ -113,6 +115,8 @@ client.on('message', async (msg) => {
 > :loudspeaker: - The message was successfully published
 > :timer: - The bot has already published 10 messages in the last hour
 > :exclamation: - The message was already published
+> :rotating_light: - The bot does not have permission to publish the messages (see below)
+> **Bot Permissions**: \`SEND_MESSAGES\` and \`MANAGE_MESSAGES\`
 > **User Permission**: \`MANAGE_CHANNELS\`
 > **Alias**: \`auto\`
         `)
