@@ -7,7 +7,7 @@ const { autopublish } = require('./util/autopublish')
 const ms = require('ms')
 const { inspect } = require('util')
 
-const db = new Database('publisher', 'mongodb://localhost/publisher', {
+const db = new Database('publisher', process.env.DB, {
   useNewUrlParser: true,
   useUnifiedTopology: true
 })
@@ -64,29 +64,30 @@ client.on('message', async (msg) => {
     case 'publish': {
       if (!args) return msg.channel.send(':x: You must provide either a link or id of the message you would like to publish.')
 
-      const m = await getMsg(msg, args[0])
+      const [m, c] = await getMsg(msg, args[0])
 
       if (m.guild.id !== msg.guild.id) return
 
-      if (!m) return msg.channel.send(':x: That message does not exist.')
-      if (m.channel.type !== 'news') return msg.channel.send(':x: That message was not sent in an announcement channel.')
+      if (!m) return msg.channel.send(':x: That message does not exist. If you are using a message ID, try using a message link instead.')
+
+      if (c.type !== 'news') return msg.channel.send(':x: That message was not sent in an announcement channel.')
 
       if (
-        !m.guild.me.permissionsIn(m.channel).has('MANAGE_MESSAGES') ||
-        !m.guild.me.permissionsIn(m.channel).has('SEND_MESSAGES')
+        !m.guild.me.permissionsIn(c).has('MANAGE_MESSAGES') ||
+        !m.guild.me.permissionsIn(c).has('SEND_MESSAGES')
       ) {
         return await msg.channel.send(':x: I do not have permission to publish messages. Please make sure I have both `SEND_MESSAGES` and `MANAGE_MESSAGES`')
           .then((m) => m.delete({ timeout: 5000 }))
       }
 
       if (
-        (m.author.id !== msg.author.id && !msg.member.permissionsIn(m.channel).has('MANAGE_MESSAGES'))
+        (m.author.id !== msg.author.id && !msg.member.permissionsIn(c).has('MANAGE_MESSAGES'))
       ) {
         return await msg.channel.send(':x: You do not have permission to use this command. You must have `MANAGE_MESSAGES` to publish another user\'s message, or `SEND_MESSAGESE` to send your own message.')
           .then((m) => m.delete({ timeout: 5000 }))
       }
 
-      const a = await client.api.channels(msg.channel.id).messages(msg.id).crosspost().post()
+      const a = await client.api.channels(msg.channel.id).messages(m.id).crosspost().post().catch((e) => Promise.resolve(e))
 
       if (a?.code === 40033) return msg.channel.send(':x: This message has already been published!')
       if (a?.message === 'You are being rate limited.') return msg.channel.send(`:x: You are being rate limited. Try again in ${ms(a?.retry_after)}`)
@@ -151,12 +152,23 @@ client.login(process.env.TOKEN)
 async function getMsg (msg, arg) {
   const get = async (m, c) => {
     return new Promise((resolve) => {
-      const ms = msg.guild.channels.cache.get(c).messages.cache.get(m)
-      if (ms) {
-        resolve(ms)
-        return
-      }
-      msg.guild.channels.cache.get(c).messages.fetch(m).then(resolve).catch(() => resolve(null))
+      msg.client.channels.fetch(c)
+        .then((ch) => {
+          if (!ch) {
+            resolve([null, null])
+            return
+          }
+
+          const ms = ch.messages.cache.get(m)
+          if (ms) {
+            resolve([ms, ch])
+            return
+          }
+
+          ch.messages.fetch(m)
+            .then((abc) => resolve([abc, ch]))
+            .catch(() => resolve([null, ch]))
+        })
     })
   }
 
@@ -164,6 +176,6 @@ async function getMsg (msg, arg) {
   const parsedUrl = constants.REGEX.MSG_URL.exec(arg)
 
   if (parsedUrl) foundMsg = await get(parsedUrl.groups?.message, parsedUrl.groups?.channel)
-  else foundMsg = foundMsg = await get(arg, msg.channel.id)
+  else foundMsg = await get(arg, msg.channel.id)
   return foundMsg
 }
