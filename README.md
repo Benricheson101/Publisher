@@ -10,29 +10,34 @@ Discord does not have this feature!
 **Prefix**: `@Publisher`
 
 ### Commands
-**publish <msg_id_to_publish|msg_url_to_publish>**
-> **Alias**: `p`\
-> **Description**: Manually publish a message\
-> **Permissions**: Both the bot and user must have `MANAGE_MESSAGES` (unless the user is also the message author)\
+**Command**: `publish`\
+**Alias**: `p`\
+**Description**: Manually publish a message\
+**Permissions**: Both the bot and user must have `MANAGE_MESSAGES` (unless the user is also the message author)\
+**Usage**: `publish <msg_id_to_publish|msg_url_to_publish>`
 
-**autopublish [add|remove [channel]]**
-> **Alias**: `auto`\
-> **Description**: Edit channels on the autopublish list\
-> **Info**: When you post a message in an autopublish channel, the bot will react with a reaction for 2 seconds:\
-> 📢 - The message was successfully published\
-> ⏲️ - The bot has already published 10 messages in the last hour\
-> ❗ - The message was already published\
-> **Permissions**: `MANAGE_CHANNELS`\
+**Command**: `autopublish`\
+**Alias**: `auto`\
+**Description**: Edit channels on the autopublish list\
+**Info**: When you post a message in an autopublish channel, the bot will react with a reaction for 2 seconds:\
+📢 - The message was successfully published\
+⏲️ - The bot has already published 10 messages in the last hour\
+❗ - The message was already published\
+**Permissions**: `MANAGE_CHANNELS`\
+**Usage**: `autopublish [add|remove [channel]]`
 
-**help**
-> **Alias**: `h`\
-> **Description**: Get a list of commands\
+**Command**: `help`\
+**Alias**: `h`\
+**Description**: Get a list of commands\
+**Usage**: `help`
 
-**invite**
-> **Description**: Invite the bot\
+**Command**: `invite`\
+**Description**: Invite the bot\
+**Usage**: `invite`
 
-**support**
-> **Description**: Get an invite to the [support server](https://discord.gg/xfe9tcW)\
+**Command**: `support`\
+**Description**: Get an invite to the [support server](https://discord.gg/xfe9tcW)\
+**Usage**: `support`
 
 ### What permissions does it need?
-The bot requires `MANAGE_MESSAGES` and `SEND_MESSAGES`, which are the permissions Discord requires to publish messages sent by users other than yourself.
+The bot requires `MANAGE_MESSAGES`, which is the permission Discord requires to publish messages sent by users other than yourself.
