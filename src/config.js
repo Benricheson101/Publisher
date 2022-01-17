@@ -1,6 +1,6 @@
 /* eslint no-useless-escape: 0 */
 
-export const constants = {
+const constants = {
   PERMISSIONS: 8192, // MANAGE_MESSAGES
   SUPPORT: 'bFDZqcTFt5',
   REGEX: {
@@ -11,3 +11,5 @@ export const constants = {
     }
   }
 }
+
+module.exports = constants
