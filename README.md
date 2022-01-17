@@ -36,7 +36,7 @@ Discord does not have this feature!
 **Usage**: `invite`
 
 **Command**: `support`\
-**Description**: Get an invite to the [support server](https://discord.gg/xfe9tcW)\
+**Description**: Get an invite to the [support server](https://discord.gg/bFDZqcTFt5)\
 **Usage**: `support`
 
 ### What permissions does it need?
