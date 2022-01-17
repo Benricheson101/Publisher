@@ -1,6 +1,6 @@
 require('dotenv/config')
 const { Client, Intents, MessageEmbed } = require('discord.js')
-const { constants } = require('./util')
+const { constants } = require('./config')
 const { Database } = require('./Database')
 const { channels } = require('./cmds/channels')
 const { autopublish } = require('./util/autopublish')
