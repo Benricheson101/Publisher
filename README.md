@@ -3,6 +3,9 @@
 ### What is it?
 Publisher is a Discord bot that automatically publishes messages sent in [announcement channels](https://support.discord.com/hc/en-us/articles/360032008192-Announcement-Channels-)
 
+| [🤖 Add bot to server](https://discord.com/oauth2/authorize?client_id=739498075315241050&permissions=8192&scope=bot%20applications.commands) |
+| --- |
+
 ### Why?
 Discord does not have this feature!
 
@@ -36,7 +39,7 @@ Discord does not have this feature!
 **Usage**: `invite`
 
 **Command**: `support`\
-**Description**: Get an invite to the [support server](https://discord.gg/xfe9tcW)\
+**Description**: Get an invite to the [support server](https://discord.gg/GmaW9dYwZf)\
 **Usage**: `support`
 
 ### What permissions does it need?
