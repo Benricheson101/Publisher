@@ -2,12 +2,11 @@ services:
   bot:
     build: '.'
     restart: 'unless-stopped'
-    volumes:
-      - './.env:/usr/src/app/.env'
     depends_on:
       - 'db'
     environment:
       DB: 'mongodb://db/publisher'
+      TOKEN: '${TOKEN}'
 
   db:
     image: 'mongo'
