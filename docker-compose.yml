@@ -1,0 +1,19 @@
+services:
+  bot:
+    build: '.'
+    restart: 'unless-stopped'
+    volumes:
+      - './.env:/usr/src/app/.env'
+    depends_on:
+      - 'db'
+    environment:
+      DB: 'mongodb://db/publisher'
+
+  db:
+    image: 'mongo'
+    volumes:
+      - 'mongo_data:/data/db'
+    restart: 'unless-stopped'
+
+volumes:
+  mongo_data:
