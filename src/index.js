@@ -1,4 +1,5 @@
 require('dotenv/config')
+require('./patches')
 const { Client, Intents, MessageEmbed } = require('discord.js')
 const { constants } = require('./config')
 const { Database } = require('./Database')
